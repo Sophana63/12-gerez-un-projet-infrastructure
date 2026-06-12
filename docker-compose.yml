@@ -1,0 +1,59 @@
+name: p12-sport-data-solution
+
+services:
+
+  flask:
+
+    build: .
+
+    container_name: flask_sport
+
+    ports:
+      - "5000:5000"
+
+    volumes:
+      - sport_data:/project/data
+      - sport_gx:/project/app/static/gx_docs
+
+    restart: unless-stopped
+
+  kestra:
+
+    image: kestra/kestra:latest
+
+    container_name: kestra_sport
+
+    user: root
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - kestra_data:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      KESTRA_CONFIGURATION: |
+        kestra:
+          server:
+            basic-auth:
+              username: admin@admin.com
+              password: Admin63!
+
+          plugins:
+            configurations:
+              - type: io.kestra.plugin.scripts.runner.docker.Docker
+                values:
+                  volume-enabled: true
+
+    command: server local
+
+    restart: unless-stopped
+
+volumes:
+
+  sport_data:
+
+  sport_gx:
+
+  kestra_data:

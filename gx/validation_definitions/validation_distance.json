@@ -1,0 +1,22 @@
+{
+  "data": {
+    "asset": {
+      "id": "ec4d2ea0-1b66-4498-a38e-2089e989a919",
+      "name": "distance_asset"
+    },
+    "batch_definition": {
+      "id": "cc01bb3e-03ca-4bae-b3f6-47bee246ca9d",
+      "name": "distance_batch"
+    },
+    "datasource": {
+      "id": "f76ba390-fff8-447d-8db8-93c291775d89",
+      "name": "sqlite_pandas_source"
+    }
+  },
+  "id": "fd199f1f-b11e-4b5e-8d36-10243a49aa6a",
+  "name": "validation_distance",
+  "suite": {
+    "id": "dbb75579-e1e2-48d9-a939-d7dadf31250b",
+    "name": "distance_suite"
+  }
+}

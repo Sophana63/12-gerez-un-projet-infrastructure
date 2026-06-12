@@ -1,0 +1,187 @@
+{% extends "base/base.html" %}
+
+{% block title %}Dashboard RH Sport{% endblock %}
+
+{% block content %}
+
+    <h1>Dashboard RH Sport</h1>
+
+    <!-- ========================================= -->
+    <!-- KPI -->
+    <!-- ========================================= -->
+
+    <div class="kpi-container">
+
+        <div class="kpi-card">
+
+            <div class="kpi-title">
+                Nombre salariés
+            </div>
+
+            <div class="kpi-value">
+                {{ nb_salaries }}
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-title">
+                Salariés éligibles prime 5%
+            </div>
+
+            <div class="kpi-value">
+                {{ nb_sportifs }}
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-title">
+                Coût prime estimé
+            </div>
+
+            <div class="kpi-value">
+                {{ "%.2f"|format(couts) }} €
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-title">
+                Salariés éligibles bien être
+            </div>
+
+            <div class="kpi-value">
+                {{ salaries_bien_etre }}
+            </div>
+
+        </div>
+
+        <div class="kpi-card">
+
+            <div class="kpi-title">
+                Congés accordés
+            </div>
+
+            <div class="kpi-value">
+                {{ jours_bien_etre }}
+            </div>
+
+        </div>        
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- SPORTS -->
+    <!-- ========================================= -->
+
+    <div class="chart-container">
+
+        <h2>Répartition des pratiques sportives</h2>
+        <canvas id="sportsChart"></canvas>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- ACTIVITÉS PAR MOIS -->
+    <!-- ========================================= -->
+
+    <div class="chart-container">
+
+        <h2>Volumétrie des activités par période</h2>
+        <canvas id="volumeChart"></canvas>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- CHART SPORTS -->
+    <!-- ========================================= -->
+
+    <script>
+
+        const sportsCtx = document.getElementById(
+            'sportsChart'
+        );
+
+        new Chart(sportsCtx, {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: {{ labels | tojson }},
+
+                datasets: [{
+
+                    label: 'Sports',
+
+                    data: {{ values | tojson }}
+
+                }]
+            }
+        });
+
+    </script>
+
+    <!-- ========================================= -->
+    <!-- CHART ACTIVITÉS -->
+    <!-- ========================================= -->
+
+    <script>
+
+        const volumeCtx = document.getElementById(
+            'volumeChart'
+        );
+
+        new Chart(volumeCtx, {
+
+            type: 'line',
+
+            data: {
+
+                labels: {{ mois_labels | tojson }},
+
+                datasets: [{
+
+                    label: 'Activités sportives',
+
+                    data: {{ mois_values | tojson }},
+
+                    tension: 0.3
+
+                }]
+            }
+        });
+
+    </script>
+
+    <h2>Dernières activités</h2>
+
+    <table>
+
+        <tr>
+            <th>Salarié</th>
+            <th>Sport</th>
+            <th>Distance</th>
+            <th>Date</th>
+            <th>Commentaire</th>
+        </tr>
+
+        {% for activite in dernieres_activites %}
+
+        <tr>
+            <td>{{ activite.nom }} {{ activite.prenom }}</td>
+            <td>{{ activite.type_activite }}</td>
+            <td>{{ activite.distance_m }} m</td>
+            <td>{{ activite.date_debut }}</td>
+            <td>{{ activite.commentaire }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+{% endblock %}

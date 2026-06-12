@@ -1,0 +1,132 @@
+id: p12_sport
+
+namespace: rh.sport
+
+description: >
+  Pipeline RH Sport : - création base SQLite - génération activités Strava simulées - calcul éligibilité - contrôle qualité Great Expectations - récupération messages Slack
+
+triggers:
+  - id: daily
+
+    type: io.kestra.plugin.core.trigger.Schedule
+
+    cron: "0 6 * * *"
+
+inputs:
+  - id: prime_taux
+    type: FLOAT
+    defaults: 0.05
+    displayName: Taux de prime
+    description: Taux appliqué au salaire annuel brut. Exemple 0.05 = 5 %
+
+tasks:
+
+  # =====================================================
+  # CREATION BASE SQLITE
+  # =====================================================
+
+  - id: create_database
+
+    type: io.kestra.plugin.docker.Run
+
+    containerImage: p12-sport-data-solution-flask:latest
+
+    entryPoint:
+      - python
+
+    commands:
+      - /project/scripts/create_sqlite_db.py
+
+    volumes:
+      - p12-sport-data-solution_sport_data:/project/data
+
+  # =====================================================
+  # GENERATION ACTIVITES STRAVA
+  # =====================================================
+
+  - id: generate_fake_activities
+
+    type: io.kestra.plugin.docker.Run
+
+    containerImage: p12-sport-data-solution-flask:latest
+
+    entryPoint:
+      - python
+
+    commands:
+      - /project/scripts/generate_fake_activities.py
+
+    volumes:
+      - p12-sport-data-solution_sport_data:/project/data
+
+  # =====================================================
+  # CALCUL ELIGIBILITE
+  # =====================================================
+
+  - id: calcul_eligibilite
+
+    type: io.kestra.plugin.docker.Run
+
+    containerImage: p12-sport-data-solution-flask:latest
+
+    entryPoint:
+      - sh
+      - -c
+
+    commands:
+      - |
+        export PRIME_TAUX="{{ inputs.prime_taux }}"
+        python /project/scripts/run_eligibilite.py
+
+    volumes:
+      - p12-sport-data-solution_sport_data:/project/data
+
+  # =====================================================
+  # DATA QUALITY
+  # =====================================================
+
+  - id: data_quality
+
+    type: io.kestra.plugin.docker.Run
+
+    containerImage: p12-sport-data-solution-flask:latest
+
+    entryPoint:
+      - python
+
+    commands:
+      - /project/scripts/ge_validation.py
+
+    volumes:
+      - p12-sport-data-solution_sport_data:/project/data
+      - p12-sport-data-solution_sport_gx:/project/app/static/gx_docs
+
+  # =====================================================
+  # MESSAGE SLACK
+  # =====================================================
+
+  - id: slack_activities
+
+    type: io.kestra.plugin.docker.Run
+
+    containerImage: p12-sport-data-solution-flask:latest
+
+    entryPoint:
+      - sh
+      - -c
+    commands:
+      - |        
+        python /project/scripts/slack_activities.py
+    volumes:
+      - "p12-sport-data-solution_sport_data:/project/data"
+
+
+  # =====================================================
+  # FIN DU PIPELINE
+  # =====================================================
+
+  - id: pipeline_completed
+
+    type: io.kestra.plugin.core.log.Log
+
+    message: "Pipeline RH Sport terminé avec succès"

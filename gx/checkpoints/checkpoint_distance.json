@@ -1,0 +1,12 @@
+{
+  "actions": [],
+  "id": "9f84e66e-5358-4011-883e-06ef853e4e8d",
+  "name": "checkpoint_distance",
+  "result_format": "SUMMARY",
+  "validation_definitions": [
+    {
+      "id": "fd199f1f-b11e-4b5e-8d36-10243a49aa6a",
+      "name": "validation_distance"
+    }
+  ]
+}

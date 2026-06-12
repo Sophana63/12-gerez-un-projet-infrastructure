@@ -1,0 +1,19 @@
+{
+  "expectations": [
+    {
+      "id": "5aeec30c-6f27-4bb8-9e8f-50ca224093e3",
+      "kwargs": {
+        "column": "distance_m"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    }
+  ],
+  "id": "dbb75579-e1e2-48d9-a939-d7dadf31250b",
+  "meta": {
+    "great_expectations_version": "1.17.2"
+  },
+  "name": "distance_suite",
+  "notes": null
+}

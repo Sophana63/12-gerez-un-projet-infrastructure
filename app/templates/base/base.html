@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} POC Avantages Sportifs{% endblock %}</title> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tabler-icons.min.css') }}">
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script> 
+</head>
+<body id="top">
+    <!-- Navbar -->
+    <div style="background:#f7f6f2; border-radius:12px; overflow:hidden; border:0.5px solid #e2e1da;">
+        <nav class="nb">
+            <a class="nb-brand" href="#">
+            <div class="nb-logo"><span>AS</span></div>
+            <span class="nb-name">Avantages sportifs</span>
+            </a>
+            <div class="nb-nav">
+            <a class="nb-link active" href="#">
+                <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+                Dashboard
+            </a>
+            <a class="nb-link" href="/swagger" target="_blank" rel="noopener noreferrer">
+                <i class="ti ti-api" aria-hidden="true"></i>
+                Swagger API
+            </a>
+            <a class="nb-link" href="{{ url_for('static', filename='gx_docs/index.html') }}" target="_blank" rel="noopener noreferrer">
+                <i class="ti ti-shield-check" aria-hidden="true"></i>
+                Data Quality
+            </a>
+            <a class="nb-link" href="https://app.slack.com/client/T0B9WP0DYKS/C0B9WP1KGQY" target="_blank" rel="noopener noreferrer">
+                <i class="ti ti-brand-slack" aria-hidden="true"></i>
+                Slack
+            </a>
+            <a class="nb-link" href="http://127.0.0.1:8080" target="_blank" rel="noopener noreferrer">
+                <i class="ti ti-database-cog" aria-hidden="true"></i>
+                Kestra
+            </a>
+            </div>
+            <div class="nb-right">
+            <span class="nb-badge">v1.0.0</span>
+            </div>
+        </nav>
+    </div>
+    <!-- Fin Navbar -->
+
+    <div class="page">
+
+    {% block content %}{% endblock %}
+
+    </div>
+      
+</body>
+</html>

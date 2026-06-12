@@ -1,0 +1,20 @@
+01 - Collecte des données RH et sportives
+
+La première étape consiste à collecter et centraliser les données RH et sportives des collaborateurs. Les informations proviennent de fichiers Excel transmis par les ressources humaines et sont intégrées dans une base SQLite. Des activités sportives simulées sont ensuite générées afin de disposer d'un volume de données suffisant pour tester l'ensemble du pipeline et les règles métier du programme d'avantages sportifs.
+
+------------------------------------------
+
+02 - Automatisation du pipeline de traitement
+
+Afin d'éviter les traitements manuels, l'ensemble du processus a été automatisé grâce à Kestra. Chaque étape du pipeline est exécutée dans un ordre précis : création de la base, génération des activités, calcul de l'éligibilité, contrôle qualité et notifications Slack. Cette approche garantit la reproductibilité des traitements et facilite la supervision du système.
+
+------------------------------------------
+
+03 - Calculer l’éligibilité des salariés
+
+Cette étape correspond au cœur métier du projet. Le pipeline applique automatiquement les règles d’éligibilité définies dans la note de cadrage. Il calcule les primes, attribue les journées bien-être et vérifie la cohérence des déclarations des salariés. Les résultats sont ensuite stockés en base afin d’être exploités dans le dashboard et dans les indicateurs de suivi.
+
+
+
+
+Cette étape correspond au cœur métier du projet. Le pipeline applique automatiquement les règles d’éligibilité définies dans la note de cadrage. Il calcule les primes, attribue les journées bien-être et vérifie la cohérence des déclarations des salariés. Les résultats sont ensuite stockés en base afin d’être exploités dans le dashboard et dans les indicateurs de suivi.

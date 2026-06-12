@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Sport Data Solution</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f0; color: #1a1a18; }
+    header { background: #1a1a18; color: #fff; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    header h1 { font-size: 1.2rem; font-weight: 500; }
+    header span { font-size: 0.85rem; color: #888; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; padding: 1.5rem 2rem 0; }
+    .card { background: #fff; border-radius: 10px; border: 1px solid #e8e6de; padding: 1.25rem; }
+    .card .label { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .card .value { font-size: 2rem; font-weight: 500; color: #1a1a18; }
+    .card .sub { font-size: 0.82rem; color: #aaa; margin-top: 0.25rem; }
+    .card.alert .value { color: #D85A30; }
+    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem 2rem; }
+    .chart-card { background: #fff; border-radius: 10px; border: 1px solid #e8e6de; padding: 1rem; }
+    .chart-card h2 { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 0.5rem; }
+    .chart-full { grid-column: 1 / -1; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { text-align: left; padding: 0.5rem 0.75rem; color: #888; font-weight: 400; border-bottom: 1px solid #eee; }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f5f5f0; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.78rem; }
+    .badge-green { background: #EAF3DE; color: #3B6D11; }
+    .badge-red { background: #FCEBEB; color: #A32D2D; }
+    .refresh { margin: 0 2rem 2rem; }
+    .refresh button { background: #1a1a18; color: #fff; border: none; padding: 0.5rem 1.25rem; border-radius: 6px; cursor: pointer; font-size: 0.88rem; }
+    .refresh button:hover { background: #333; }
+    @media (max-width: 600px) { .charts { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sport Data Solution — Dashboard Avantages Sportifs</h1>
+    <span id="last-update"></span>
+  </header>
+
+  <div class="metrics" id="metrics">
+    <div class="card"><div class="label">Salariés</div><div class="value" id="nb-salaries">—</div></div>
+    <div class="card"><div class="label">Activités totales</div><div class="value" id="nb-activites">—</div></div>
+    <div class="card"><div class="label">Coût primes (€)</div><div class="value" id="cout-primes">—</div><div class="sub" id="pct-prime"></div></div>
+    <div class="card"><div class="label">Bénéficiaires bien-être</div><div class="value" id="nb-bien-etre">—</div><div class="sub" id="jours-total"></div></div>
+    <div class="card alert"><div class="label">Alertes qualité</div><div class="value" id="nb-alertes">—</div><div class="sub">non résolues</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card chart-full">
+      <h2>Activités par mois (12 derniers mois)</h2>
+      <div id="chart-mois" style="height:220px"></div>
+    </div>
+    <div class="chart-card">
+      <h2>Répartition par sport</h2>
+      <div id="chart-sport" style="height:260px"></div>
+    </div>
+    <div class="chart-card">
+      <h2>Top 5 salariés les plus actifs</h2>
+      <div id="chart-top" style="height:260px"></div>
+    </div>
+    <div class="chart-card chart-full">
+      <h2>Impact financier</h2>
+      <table id="table-impact">
+        <thead><tr><th>Avantage</th><th>Bénéficiaires</th><th>Taux couverture</th><th>Coût total</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="refresh">
+    <button onclick="chargerKPIs()">Actualiser les données</button>
+  </div>
+
+  <script>
+    const COLORS = ['#534AB7','#1D9E75','#D85A30','#378ADD','#BA7517','#D4537E'];
+
+    async function chargerKPIs() {
+      const r = await fetch('/dashboard/kpis');
+      const d = await r.json();
+
+      document.getElementById('nb-salaries').textContent = d.impact_financier.nb_salaries_total;
+      document.getElementById('nb-activites').textContent = d.nb_activites_total.toLocaleString('fr-FR');
+      document.getElementById('cout-primes').textContent = d.impact_financier.cout_total_eur.toLocaleString('fr-FR', {minimumFractionDigits: 0});
+      document.getElementById('pct-prime').textContent = `${d.impact_financier.prime.nb_beneficiaires} bénéficiaires (${d.impact_financier.prime.taux_couverture}%)`;
+      document.getElementById('nb-bien-etre').textContent = d.impact_financier.bien_etre.nb_beneficiaires;
+      document.getElementById('jours-total').textContent = `${d.impact_financier.bien_etre.nb_jours_total} jours accordés`;
+      document.getElementById('nb-alertes').textContent = d.nb_alertes_non_resolues;
+      document.getElementById('last-update').textContent = 'Mis à jour : ' + new Date().toLocaleTimeString('fr-FR');
+
+      // Chart : activités par mois
+      Plotly.newPlot('chart-mois', [{
+        x: d.activites_par_mois.map(m => m.mois),
+        y: d.activites_par_mois.map(m => m.nb),
+        type: 'bar', marker: { color: '#534AB7' }, name: 'Activités'
+      }], {
+        margin: {t:10,b:40,l:40,r:10}, paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+        xaxis: { tickfont: { size: 11 } }, yaxis: { tickfont: { size: 11 } },
+        bargap: 0.3,
+      }, { responsive: true, displayModeBar: false });
+
+      // Chart : répartition sports (pie)
+      Plotly.newPlot('chart-sport', [{
+        labels: d.activites_par_sport.map(s => s.sport),
+        values: d.activites_par_sport.map(s => s.nb),
+        type: 'pie', marker: { colors: COLORS }, textinfo: 'label+percent',
+        hoverinfo: 'label+value',
+      }], {
+        margin: {t:10,b:10,l:10,r:10}, paper_bgcolor:'transparent', showlegend: false,
+      }, { responsive: true, displayModeBar: false });
+
+      // Chart : top salariés
+      Plotly.newPlot('chart-top', [{
+        x: d.top_salaries.map(s => s.nb_activites),
+        y: d.top_salaries.map(s => s.nom),
+        type: 'bar', orientation: 'h', marker: { color: '#1D9E75' },
+      }], {
+        margin: {t:10,b:30,l:120,r:10}, paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+        xaxis: { tickfont: { size: 11 } }, yaxis: { tickfont: { size: 11 } },
+      }, { responsive: true, displayModeBar: false });
+
+      // Table impact financier
+      const tbody = document.querySelector('#table-impact tbody');
+      tbody.innerHTML = `
+        <tr>
+          <td>Prime sportive (5%)</td>
+          <td>${d.impact_financier.prime.nb_beneficiaires}</td>
+          <td>${d.impact_financier.prime.taux_couverture}%</td>
+          <td><strong>${d.impact_financier.cout_total_eur.toLocaleString('fr-FR', {style:'currency', currency:'EUR'})}</strong></td>
+        </tr>
+        <tr>
+          <td>Jours bien-être</td>
+          <td>${d.impact_financier.bien_etre.nb_beneficiaires}</td>
+          <td>${d.impact_financier.bien_etre.taux_couverture}%</td>
+          <td>${d.impact_financier.bien_etre.nb_jours_total} jours</td>
+        </tr>
+      `;
+    }
+
+    chargerKPIs();
+  </script>
+</body>
+</html>
