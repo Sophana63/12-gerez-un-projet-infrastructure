@@ -389,9 +389,10 @@ docker ps
 
 Exemple :  
 
-CONTAINER ID   IMAGE                              STATUS
-xxxxxxxxxxxx   p12-sport-data-solution-flask      Up
-xxxxxxxxxxxx   kestra/kestra                      Up
+| CONTAINER ID | IMAGE                         | STATUS |
+|-------------|-------------------------------|--------|
+| xxxxxxxxxxxx | p12-sport-data-solution-flask | Up |
+| xxxxxxxxxxxx | kestra/kestra                 | Up |
 
 
 ### Réinitialisation complète
