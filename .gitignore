@@ -6,5 +6,5 @@ venv/
 # Variables sensibles
 .env
 
-test/
+tests/
 
