@@ -35,11 +35,6 @@ services:
     environment:
       KESTRA_CONFIGURATION: |
         kestra:
-          server:
-            basic-auth:
-              username: admin@admin.com
-              password: Admin63!
-
           plugins:
             configurations:
               - type: io.kestra.plugin.scripts.runner.docker.Docker

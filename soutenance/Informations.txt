@@ -1,0 +1,10 @@
+Lien gitHub :
+https://github.com/Sophana63/12-gerez-un-projet-infrastructure
+
+-----------------------------
+
+Dashboard :
+La visualisation et les mises à jour du dashboard
+sont implémentées directement dans le project via Flask
+
+-----------------------------
